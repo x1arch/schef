@@ -24,6 +24,7 @@ import (
 
 var (
 	ErrWrongScheduleFormat = errors.New("wrong schedule format")
+	ErrTagNotFound         = errors.New("tag not found")
 )
 
 type Schef struct {
@@ -236,6 +237,10 @@ func (c *Schef) NextDate(t time.Time) (time.Time, error) {
 }
 
 func (c *Schef) NextDateTag(tag string, t time.Time) (time.Time, error) {
+	if _, ok := c.modificators[tag]; !ok {
+		return time.Time{}, ErrTagNotFound
+	}
+
 	var err error
 	for i, m := range c.modificators[tag] {
 		if t, err = m(t); err != nil {
